@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>auto_enhancer64</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: black;
+  font-family: Arial, sans-serif;
+  height: 100%;
+}
+
+body {
+  background:
+    linear-gradient(to bottom,
+      #1d4ed8 0%,
+      #2563eb 33%,
+      #f5e6b3 33%,
+      #f5e6b3 66%,
+      #f97316 66%,
+      #c2410c 100%);
+  background-attachment: fixed;
+}
+
+#app {
+  width: 100vw;
+  height: 100vh;
+}
+
+.title {
+  font-size: 64px;
+  font-weight: 900;
+  text-transform: lowercase;
+  letter-spacing: 2px;
+  text-align: center;
+  margin-top: 20px;
+
+  background: linear-gradient(
+    to bottom,
+    #ff2b2b 0%,
+    #ff8a00 25%,
+    #ffe600 50%,
+    #00d95f 75%,
+    #00a2ff 100%
+  );
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  text-shadow:
+    4px 4px 0 #000,
+    8px 8px 12px rgba(0,0,0,0.8);
+}
+
+.panel {
+  background: rgba(0,0,0,0.9);
+  border-radius: 24px;
+  padding: 20px;
+  width: 420px;
+  margin: auto;
+  margin-top: 20px;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 14px;
+  background: #111;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #222;
+}
+
+select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  margin-top: 12px;
+  background: #111;
+  color: white;
+  border: none;
+}
+
+.status {
+  margin-top: 16px;
+  color: #0f0;
+  font-size: 14px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+<div class="title">
+auto_enhancer64
+</div>
+
+<div class="panel">
+
+<button onclick="uploadROM()">
+Upload ROM
+</button>
+
+<button onclick="uploadCore()">
+Upload Emulator Core
+</button>
+
+<select id="coreSelect">
+<option>No Core Loaded</option>
+</select>
+
+<button onclick="installApp()">
+Download Emulator
+</button>
+
+<div class="status" id="status">
+Ready
+</div>
+
+</div>
+
+</div>
+
+<input type="file" id="romInput" hidden />
+<input type="file" id="coreInput" hidden />
+
+<script>
+let romFile = null;
+let cores = [];
+
+function uploadROM() {
+  document.getElementById('romInput').click();
+}
+
+function uploadCore() {
+  document.getElementById('coreInput').click();
+}
+
+document.getElementById('romInput').addEventListener('change', e => {
+  romFile = e.target.files[0];
+
+  document.getElementById('status').innerText =
+    'ROM Loaded: ' + romFile.name;
+});
+
+document.getElementById('coreInput').addEventListener('change', e => {
+  const file = e.target.files[0];
+
+  if (!file) return;
+
+  cores.push(file);
+
+  const select = document.getElementById('coreSelect');
+
+  const option = document.createElement('option');
+  option.textContent = file.name;
+
+  select.appendChild(option);
+
+  document.getElementById('status').innerText =
+    'Core Loaded: ' + file.name;
+});
+
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+});
+
+async function installApp() {
+  if (!deferredPrompt) {
+    alert('Install prompt not available yet.');
+    return;
+  }
+
+  deferredPrompt.prompt();
+
+  await deferredPrompt.userChoice;
+
+  deferredPrompt = null;
+}
+</script>
+
+</body>
+</html>
